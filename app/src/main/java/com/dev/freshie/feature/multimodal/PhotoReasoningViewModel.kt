@@ -1,25 +1,18 @@
 package com.dev.freshie.feature.multimodal
 
 import android.graphics.Bitmap
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.imageResource
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dev.freshie.R
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-//import kotlinx.coroutines.flow.internal.NoOpContinuation.context
 import kotlinx.coroutines.launch
-//import kotlin.coroutines.jvm.internal.CompletedContinuation.context
 
 class PhotoReasoningViewModel(
-    private val generativeModel: GenerativeModel
+    private val generativeModel: GenerativeModel,
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<PhotoReasoningUiState> =
@@ -32,6 +25,7 @@ class PhotoReasoningViewModel(
         selectedImages: List<Bitmap>
     ) {
         _uiState.value = PhotoReasoningUiState.Loading
+        //val prompt = context.getString(R.string.photo_reasoning_prompt)
         val prompt = "Objective:\n" +
                 "To generate detailed responses about the freshness of fruits and vegetables in provided images.\n" +
                 "\n" +
