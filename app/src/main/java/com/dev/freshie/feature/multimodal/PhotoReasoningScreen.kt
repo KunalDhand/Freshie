@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -190,10 +191,13 @@ fun PhotoReasoningScreen(
                     )*/
                     TextButton(
                         onClick = {
-                            onReasonClicked("", imageUris.toList())
-                            /*if (userQuestion.isNotBlank()) {
-                                onReasonClicked(*//*userQuestion,*//* imageUris.toList())
-                            }*/
+                            if (imageUris.isNotEmpty()) {
+                                onReasonClicked("", imageUris.toList())
+                            } else {
+                                // Handle the case where imageUris is empty
+                                // You can show a toast message or any other appropriate action
+                                Toast.makeText(context, "Select or click image of veggie first.", Toast.LENGTH_SHORT).show()
+                            }
                         },
                         modifier = Modifier
                             .padding(all = 4.dp)
