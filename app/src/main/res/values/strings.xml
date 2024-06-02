@@ -20,8 +20,55 @@
     <string name="reason_hint">Upload an image and then ask a question</string>
     <string name="add_image">Add Image</string>
 
+    <string name="photo_reasoning_prompt"><![CDATA[
+Objective:
+To generate detailed responses about the freshness of fruits and vegetables in provided images.
+
+Instructions:
+1. For each image given as input to the model, follow steps 2 and 3. For multiple images, provide the output for each file with its position.
+   Example for two files:
+
+   1. &lt;output of the first image&gt;
+
+   2. &lt;output of the second image&gt;
+
+
+2. Identify the Subject:
+   - Check if the given image(s) is of any fruit or vegetable.
+   - If not, return: `Not a picture of fruit or vegetable`.
+   - If yes, proceed to step 3.
+
+3. Assess Freshness:
+   - Determine if the fruit or vegetable is spoiled or fresh.
+   - If spoiled, output: &lt;fruit/vegetable name&gt;: SPOILED.
+   - If fresh, output: &lt;fruit/vegetable name&gt;: FRESH.
+
+Examples:
+
+- Single Image Example:
+  - Input: Image of a fresh Banana
+  - Output: `Banana: FRESH`
+
+  - Input: Image of a spoiled Apple
+  - Output: `Apple: SPOILED`
+
+- Multiple Images Example:
+  - Input: First image of a spoiled Banana, second image of a fresh Apple
+  - Output:
+    1. Banana: SPOILED
+    2. Apple: FRESH
+
+Combined Example:
+If two photos are given, the first one is of a spoiled Banana and the second one is of a fresh Apple, then the output should be:
+1. Banana: SPOILED
+2. Apple: FRESH
+]]></string>
+
+
+
     <!-- Chat sample strings -->
     <string name="chat_label">Message</string>
     <string name="action_send">Send</string>
     <string name="photo_reasoning_title">Select photo of any fruit or vegetable to check the Freshness.</string>
+    <string name="capture_image">Capture image from camera</string>
 </resources>

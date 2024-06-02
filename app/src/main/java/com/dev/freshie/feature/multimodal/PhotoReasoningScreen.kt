@@ -1,23 +1,31 @@
 package com.dev.freshie.feature.multimodal
 
+import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Place
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -37,12 +45,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.ImageLoader
 import coil.compose.AsyncImage
@@ -52,7 +63,10 @@ import coil.size.Precision
 import com.dev.freshie.GenerativeViewModelFactory
 import com.dev.freshie.R
 import com.dev.freshie.util.UriSaver
+//import kotlinx.coroutines.flow.internal.NoOpContinuation.context
 import kotlinx.coroutines.launch
+import java.io.File
+//import kotlin.coroutines.jvm.internal.CompletedContinuation.context
 
 @Composable
 internal fun PhotoReasoningRoute(
@@ -99,6 +113,7 @@ fun PhotoReasoningScreen(
     onReasonClicked: (String, List<Uri>) -> Unit = { _, _ -> }
 ) {
     //var userQuestion by rememberSaveable { mutableStateOf("") }
+    val context = LocalContext.current
     val imageUris = rememberSaveable(saver = UriSaver()) { mutableStateListOf() }
 
     val pickMedia = rememberLauncherForActivityResult(
@@ -106,6 +121,16 @@ fun PhotoReasoningScreen(
     ) { imageUri ->
         imageUri?.let {
             imageUris.add(it)
+        }
+    }
+
+    val takePicture = rememberLauncherForActivityResult(
+        ActivityResultContracts.TakePicturePreview()
+    ) { bitmap ->
+        bitmap?.let {
+            // Save bitmap to a file and get the URI
+            val uri = saveBitmapToFile(context, bitmap)
+            imageUris.add(uri)
         }
     }
 
@@ -144,6 +169,21 @@ fun PhotoReasoningScreen(
                             contentDescription = stringResource(R.string.add_image),
                         )
                     }
+
+                    IconButton(
+                        onClick = {
+                            takePicture.launch(null)
+                        },
+                        modifier = Modifier
+                            .padding(all = 4.dp)
+                            .align(Alignment.CenterVertically)
+                    ) {
+                        Icon(
+                            painter= painterResource(id = R.drawable.round_camera_alt_24),
+                            contentDescription = stringResource(R.string.capture_image),
+                        )
+                    }
+
                     /*OutlinedTextField(
                         value = userQuestion,
                         label = { Text(stringResource(R.string.reason_label)) },
@@ -171,14 +211,30 @@ fun PhotoReasoningScreen(
                 modifier = Modifier.padding(all = 8.dp)
             ) {
                 items(imageUris) { imageUri ->
-                    AsyncImage(
-                        model = imageUri,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .requiredSize(72.dp)
-                    )
+                    Box(modifier = Modifier.padding(4.dp)) {
+                        AsyncImage(
+                            model = imageUri,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .requiredSize(72.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                        )
+                        IconButton(
+                            onClick = { imageUris.remove(imageUri) },
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .background(Color.Black.copy(alpha = 0.5f), CircleShape)
+                                .size(16.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Remove image",
+                                tint = Color.White
+                            )
+                        }
+                    }
                 }
+
             }
         }
         when (uiState) {
@@ -253,6 +309,16 @@ fun PhotoReasoningScreen(
         }
     }
 }
+
+fun saveBitmapToFile(context: Context, bitmap: Bitmap): Uri {
+    // Save the bitmap to a file and return the URI
+    val file = File(context.cacheDir, "${System.currentTimeMillis()}.jpg")
+    file.outputStream().use {
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
+    }
+    return FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
+}
+
 
 @Composable
 @Preview(showSystemUi = true)

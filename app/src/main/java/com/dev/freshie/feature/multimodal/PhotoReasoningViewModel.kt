@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dev.freshie.R
@@ -31,7 +32,47 @@ class PhotoReasoningViewModel(
         selectedImages: List<Bitmap>
     ) {
         _uiState.value = PhotoReasoningUiState.Loading
-        val prompt = "Look at the image(s), and then answer the following question: is the given image(s) is of fruits or vegetables? if yes then check if the food item is fresh or spoiled. Answer only in 'Fresh' or 'Spoil' and if the image is not of fruits or vegetables simply say 'Image is not a fruit or vegetable'"
+        val prompt = "Objective:\n" +
+                "To generate detailed responses about the freshness of fruits and vegetables in provided images.\n" +
+                "\n" +
+                "Instructions:\n" +
+                "1. For each image given as input to the model, follow steps 2 and 3. For multiple images, provide the output for each file with its position. \n" +
+                "   Example for two files:\n" +
+                "\n" +
+                "   1. <output of the first image>\n" +
+                "\n" +
+                "   2. <output of the second image>\n" +
+                "\n" +
+                "\n" +
+                "2. Identify the Subject:\n" +
+                "   - Check if the given image(s) is of any fruit or vegetable.\n" +
+                "   - If not, return: `Not a picture of fruit or vegetable`.\n" +
+                "   - If yes, proceed to step 3.\n" +
+                "\n" +
+                "3. Assess Freshness:\n" +
+                "   - Determine if the fruit or vegetable is spoiled or fresh.\n" +
+                "   - If spoiled, output: `<fruit/vegetable name>: SPOILED`.\n" +
+                "   - If fresh, output: `<fruit/vegetable name>: FRESH`.\n" +
+                "\n" +
+                "Examples:\n" +
+                "\n" +
+                "- Single Image Example:\n" +
+                "  - Input: Image of a fresh Banana\n" +
+                "  - Output: `Banana: FRESH`\n" +
+                "\n" +
+                "  - Input: Image of a spoiled Apple\n" +
+                "  - Output: `Apple: SPOILED`\n" +
+                "\n" +
+                "- Multiple Images Example:\n" +
+                "  - Input: First image of a spoiled Banana, second image of a fresh Apple\n" +
+                "  - Output:\n" +
+                "    1. Banana: SPOILED\n" +
+                "    2. Apple: FRESH\n" +
+                "\n" +
+                "Combined Example:\n" +
+                "If two photos are given, the first one is of a spoiled Banana and the second one is of a fresh Apple, then the output should be:\n" +
+                "1. Banana: SPOILED\n" +
+                "2. Apple: FRESH\n"
         var testReport = "0 "
 
         val image : Bitmap = selectedImages.get(0)
