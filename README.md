@@ -1,6 +1,3 @@
-Here's a detailed README.md file for the "FRESHIE" project:
-
-
 # FRESHIE - Veggie Freshness Check App
 
 FRESHIE is an Android application designed to help users determine the freshness of their fruits and vegetables. By leveraging the Gemini API's photo reasoning model, FRESHIE can analyze images and provide instant feedback on whether the produce is fresh or spoiled.
