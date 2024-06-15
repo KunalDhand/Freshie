@@ -77,15 +77,16 @@ To generate detailed responses about the freshness of fruits and vegetables in p
 Instructions:
 1. For each image given as input to the model, follow steps 2 and 3. For multiple images, provide the output for each file with its position.
    Example for two files:
+   ```
    1. <output of the first image>
    2. <output of the second image>
-
-2. Identify the Subject:
+   ```
+3. Identify the Subject:
    - Check if the given image(s) is of any fruit or vegetable.
    - If not, return: `Not a picture of fruit or vegetable`.
    - If yes, proceed to step 3.
 
-3. Assess Freshness:
+4. Assess Freshness:
    - Determine if the fruit or vegetable is spoiled or fresh.
    - If spoiled, output: <fruit/vegetable name>: SPOILED.
    - If fresh, output: <fruit/vegetable name>: FRESH.
